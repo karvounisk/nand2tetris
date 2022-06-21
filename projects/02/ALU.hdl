@@ -42,12 +42,20 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
+    // Zero and/or negate x and y 
     ZrNeg16(in=x, z=zx, n=nx, out=zrnegx);
     ZrNeg16(in=y, z=zy, n=ny, out=zrnegy);
+    
+    // And - Add operations, select result
     And16(a=zrnegx, b=zrnegy, out=andres);
     Add16(a=zrnegx, b=zrnegy, out=addres);
     Mux16(a=andres, b=addres, sel=f, out=muxres);
-    ZrNeg16(in=muxres, z=false, n=no, out[0..7]=low8, out[8..15]=high8, out=out, out[15]=ng);
+
+    // Negate result
+    Not16(in=muxres, out=notmuxres);
+    Mux16(a=muxres, b=notmuxres, sel=no, out[0..7]=low8, out[8..15]=high8, out=out, out[15]=ng);
+    
+    // Flags
     Or8Way(in=low8, out=or1);
     Or8Way(in=high8, out=or2);
     Or(a=or1, b=or2, out=or12);

@@ -3,8 +3,7 @@ CHIP ZrNeg16 {
     OUT out[16];
 
     PARTS:
-    Not(in=z, out=notz);
-    And16(a=in, b[0]=notz, b[1]=notz, b[2]=notz, b[3]=notz, b[4]=notz, b[5]=notz, b[6]=notz, b[7]=notz, b[8]=notz, b[9]=notz, b[10]=notz, b[11]=notz, b[12]=notz, b[13]=notz, b[14]=notz, b[15]=notz, out=zeroin);
+    Mux16(a=in, b=false, sel=z, out=zeroin);
     Not16(in=zeroin, out=notzeroin);
     Mux16(a=zeroin, b=notzeroin, sel=n, out=out);
 }
