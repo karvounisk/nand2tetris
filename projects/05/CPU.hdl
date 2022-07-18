@@ -39,5 +39,45 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    // C-instruction format: 111 a cccccc ddd jjj
+
+    // Decode instruction (A or C instruction)
+    Mux16(a=instruction, b=aluOut, sel=instruction[15], out=aRegIn);
+   
+    // Load to A-Register only if A-instruction or if C-instruction and instruction[5]=1
+    Mux(a=true, b=instruction[5], sel=instruction[15], out=aRegLoad);   
+    ARegister(in=aRegIn, load=aRegLoad, out=aRegOut, out[0..14]=addressM);
+    
+    // Load to D-register only if C-instruction and instruction[4]=1
+    Mux(a=false, b=instruction[4], sel=instruction[15], out=dRegLoad);   
+    DRegister(in=aluOut, load=dRegLoad, out=dRegOut);
+
+     // Write to M only if C-instruction and instruction[3]=1
+    Mux(a=false, b=instruction[3], sel=instruction[15], out=writeM);   
+    
+    // Choose computation source (A or M)
+    Mux16(a=aRegOut, b=inM, sel=instruction[12], out=amRegOut);
+    // Execute
+    ALU(x=dRegOut, y=amRegOut, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=aluOut, zr=zr, ng=ng);
+
+    // PC counter
+
+    // Not positive
+    Or(a=zr, b=ng, out=notPos);
+    Not(in=notPos, out=pos);
+    
+    // Jump conditions
+    And(a=pos, b=instruction[0], out=posEq);
+    And(a=zr, b=instruction[1], out=zrEq);
+    And(a=ng, b=instruction[2], out=ngEq);
+    
+    Or(a=posEq, b=zrEq, out=jump1);
+    Or(a=jump1, b=ngEq, out=jump);
+
+    Mux(a=false, b=jump, sel=instruction[15], out=loadPc);
+
+    PC(in=aRegOut, load=loadPc, inc=true, reset=reset, out[0..14]=pc);
+
+   
+    
 }
