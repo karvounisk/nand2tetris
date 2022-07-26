@@ -74,10 +74,9 @@ CHIP CPU {
     Or(a=posEq, b=zrEq, out=jump1);
     Or(a=jump1, b=ngEq, out=jump);
 
+    // Jump only if C-instruction
     Mux(a=false, b=jump, sel=instruction[15], out=loadPc);
 
     PC(in=aRegOut, load=loadPc, inc=true, reset=reset, out[0..14]=pc);
 
-   
-    
 }
