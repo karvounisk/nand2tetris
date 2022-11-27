@@ -1,9 +1,8 @@
 object Assembler {
     fun assemble(lines: List<String>): List<String> {
-        return lines
-            .map { Parser.clean(it) }
-            .filter { it.isNotEmpty() }
-            .map { Parser.symbol(it) }
-            .map { Binary.binary(it) }
+        val linesCleaned = Parser.clean(lines)
+        val symbolTable = Parser.findSymbols(linesCleaned)
+        val binaryTranslator = BinaryTranslator(symbolTable)
+        return binaryTranslator.translate(linesCleaned.map { Parser.symbol(it) })
     }
 }

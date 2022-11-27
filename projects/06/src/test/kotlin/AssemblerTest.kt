@@ -16,4 +16,13 @@ internal class AssemblerTest {
         val actualHack = Assembler.assemble(inputAsm)
         assertEquals(expectedHack, actualHack)
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["max/Max", "pong/Pong", "rect/Rect"])
+    fun testWithSymbols(program: String) {
+        val inputAsm = readLines("$program.asm")
+        val expectedHack = readLines("$program.hack")
+        val actualHack = Assembler.assemble(inputAsm)
+        assertEquals(expectedHack, actualHack)
+    }
 }

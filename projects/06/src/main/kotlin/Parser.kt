@@ -1,6 +1,8 @@
 object Parser {
-    fun clean(line: String): String {
-        return line.trim().split("//")[0]
+    fun clean(lines: List<String>): List<String> {
+        return lines
+            .map { it.split("//")[0].trim() }
+            .filter { it.isNotEmpty() }
     }
 
     private fun instructionType(line: String): InstructionType {
@@ -29,5 +31,21 @@ object Parser {
             InstructionType.C_INSTRUCTION -> ParsedC(symbolC(line))
             InstructionType.L_INSTRUCTION -> ParsedL(symbolL(line))
         }
+    }
+
+    fun findSymbols(lines: List<String>): MutableMap<String, Int> {
+        val symbolTable: MutableMap<String, Int> = mutableMapOf()
+        var lineIndex = 0
+
+        lines
+            .forEach { line ->
+                when(val parsedLine = symbol(line)) {
+                    is ParsedA -> lineIndex++
+                    is ParsedC -> lineIndex++
+                    is ParsedL -> symbolTable[parsedLine.instruction] = lineIndex
+                }
+            }
+
+        return symbolTable
     }
 }
