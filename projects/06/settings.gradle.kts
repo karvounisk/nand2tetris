@@ -1,3 +1,2 @@
-
-rootProject.name = "untitled"
+rootProject.name = "nand2tetris-assembler"
 

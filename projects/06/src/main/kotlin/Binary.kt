@@ -59,7 +59,8 @@ object Binary {
     private fun binaryC(parsed: ParsedC): String {
         val (dest, comp, jump) = parsed.instruction
         val (aDigit, compBinary) = CompMap[comp]!!.toList()
-        return "111${aDigit}${DestMap[dest]}${compBinary}${JumpMap[jump]}"
+        val destBinary = DestMap[dest.toCharArray().sorted().joinToString("")]
+        return "111${aDigit}${compBinary}$destBinary${JumpMap[jump]}"
     }
 
     private fun binaryL(parsed: ParsedL): String {
